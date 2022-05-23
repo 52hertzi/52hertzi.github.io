@@ -1,0 +1,585 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cobaltstrike指令/Beacon命令 | 52hertzi</title><meta name="keywords" content="Beacon,CobaltStrike"><meta name="author" content="Shawn"><meta name="copyright" content="Shawn"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="Command Description        argue 命令行参数欺骗   blockdlls 禁止子进程加载非微软签名的dll   browserpivot 注入浏览器进程代理用户已认证身份（仅支持IE）   cancel 取消正在下载的文件   cd 跳转目录   checkin 强制目标回连并更新状态（用于DNS上线，DNS模式下无新任务时目标不会回连Teamserver）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cobaltstrike指令&#x2F;Beacon命令">
+<meta property="og:url" content="http://52hertzi.com/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="52hertzi">
+<meta property="og:description" content="Command Description        argue 命令行参数欺骗   blockdlls 禁止子进程加载非微软签名的dll   browserpivot 注入浏览器进程代理用户已认证身份（仅支持IE）   cancel 取消正在下载的文件   cd 跳转目录   checkin 强制目标回连并更新状态（用于DNS上线，DNS模式下无新任务时目标不会回连Teamserver）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg">
+<meta property="article:published_time" content="2022-05-06T05:45:37.000Z">
+<meta property="article:modified_time" content="2022-05-10T18:02:34.476Z">
+<meta property="article:author" content="Shawn">
+<meta property="article:tag" content="Beacon">
+<meta property="article:tag" content="CobaltStrike">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://52hertzi.com/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2022-05-11 02:02:34'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+   if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }const asideStatus = saveToLocal.get('aside-status')
+if (asideStatus !== undefined) {
+   if (asideStatus === 'hide') {
+     document.documentElement.classList.add('hide-aside')
+   } else {
+     document.documentElement.classList.remove('hide-aside')
+   }
+}})()</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://i.loli.net/2020/11/09/qgoaAWLQdRIs7uD.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">43</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 生活</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/artitalk/"><i class="fa-fw fa fa-envira"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">52hertzi</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 生活</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/artitalk/"><i class="fa-fw fa fa-envira"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><h1 class="post-title">Cobaltstrike指令/Beacon命令</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-05-06T05:45:37.000Z" title="发表于 2022-05-06 13:45:37">2022-05-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-05-10T18:02:34.476Z" title="更新于 2022-05-11 02:02:34">2022-05-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0/">知识学习</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><table>
+<thead>
+<tr>
+<th align="left">Command</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">argue</td>
+<td align="left">命令行参数欺骗</td>
+</tr>
+<tr>
+<td align="left">blockdlls</td>
+<td align="left">禁止子进程加载非微软签名的dll</td>
+</tr>
+<tr>
+<td align="left">browserpivot</td>
+<td align="left">注入浏览器进程代理用户已认证身份（仅支持IE）</td>
+</tr>
+<tr>
+<td align="left">cancel</td>
+<td align="left">取消正在下载的文件</td>
+</tr>
+<tr>
+<td align="left">cd</td>
+<td align="left">跳转目录</td>
+</tr>
+<tr>
+<td align="left">checkin</td>
+<td align="left">强制目标回连并更新状态（用于DNS上线，DNS模式下无新任务时目标不会回连Teamserver）</td>
+</tr>
+<tr>
+<td align="left">chromedump</td>
+<td align="left">提取Chrome保存的账号密码、Cookies等信息</td>
+</tr>
+<tr>
+<td align="left">clear</td>
+<td align="left">清空beacon任务队列</td>
+</tr>
+<tr>
+<td align="left">connect</td>
+<td align="left">通过TCP正向连接远程Beacon</td>
+</tr>
+<tr>
+<td align="left">covertvpn</td>
+<td align="left">部署Covert VPN客户端</td>
+</tr>
+<tr>
+<td align="left">cp</td>
+<td align="left">复制文件</td>
+</tr>
+<tr>
+<td align="left">dcsync</td>
+<td align="left">从域控提取密码hash</td>
+</tr>
+<tr>
+<td align="left">desktop</td>
+<td align="left">远程VNC控制用户桌面</td>
+</tr>
+<tr>
+<td align="left">dllinject</td>
+<td align="left">注入一个内存反射加载的dll到目标进程</td>
+</tr>
+<tr>
+<td align="left">dllload</td>
+<td align="left">使用LoadLibrary方式在目标进程中加载一个dll</td>
+</tr>
+<tr>
+<td align="left">download</td>
+<td align="left">下载文件</td>
+</tr>
+<tr>
+<td align="left">downloads</td>
+<td align="left">列出所有正在下载的文件</td>
+</tr>
+<tr>
+<td align="left">drives</td>
+<td align="left">列出所有磁盘盘符</td>
+</tr>
+<tr>
+<td align="left">elevate</td>
+<td align="left">利用提权漏洞获取一个高权限Beacon</td>
+</tr>
+<tr>
+<td align="left">execute</td>
+<td align="left">在目标上执行程序（无回显）</td>
+</tr>
+<tr>
+<td align="left">execute-assembly</td>
+<td align="left">在目标上内存加载执行本地.NET程序</td>
+</tr>
+<tr>
+<td align="left">exit</td>
+<td align="left">结束当前Beacon会话</td>
+</tr>
+<tr>
+<td align="left">getprivs</td>
+<td align="left">在当前进程访问令牌（access token）中启用system特权</td>
+</tr>
+<tr>
+<td align="left">getsystem</td>
+<td align="left">尝试获取SYSTEM用户权限</td>
+</tr>
+<tr>
+<td align="left">getuid</td>
+<td align="left">获取当前进程访问令牌（access token）的用户信息</td>
+</tr>
+<tr>
+<td align="left">hashdump</td>
+<td align="left">获取本地用户hash</td>
+</tr>
+<tr>
+<td align="left">help</td>
+<td align="left">帮助信息</td>
+</tr>
+<tr>
+<td align="left">inject</td>
+<td align="left">在指定进程中注入新的Beacon会话</td>
+</tr>
+<tr>
+<td align="left">inline-execute</td>
+<td align="left">在当前会话中执行Beacon Object File</td>
+</tr>
+<tr>
+<td align="left">jobkill</td>
+<td align="left">结束一个后台任务</td>
+</tr>
+<tr>
+<td align="left">jobs</td>
+<td align="left">列出所有后台任务</td>
+</tr>
+<tr>
+<td align="left">jump</td>
+<td align="left">在远程机器上植入Beacon（横向移动）</td>
+</tr>
+<tr>
+<td align="left">kerberos_ccache_use</td>
+<td align="left">从ccache文件导入kerberos票据到当前会话中</td>
+</tr>
+<tr>
+<td align="left">kerberos_ticket_purge</td>
+<td align="left">清空当前会话中的所有kerberos票据</td>
+</tr>
+<tr>
+<td align="left">kerberos_ticket_use</td>
+<td align="left">从ticket文件中导入kerberos票据到当前会话中</td>
+</tr>
+<tr>
+<td align="left">keylogger</td>
+<td align="left">开启键盘记录</td>
+</tr>
+<tr>
+<td align="left">kill</td>
+<td align="left">结束指定进程</td>
+</tr>
+<tr>
+<td align="left">link</td>
+<td align="left">通过命名管道正向连接远程Beacon</td>
+</tr>
+<tr>
+<td align="left">logonpasswords</td>
+<td align="left">使用mimikatz获取密码和hash</td>
+</tr>
+<tr>
+<td align="left">ls</td>
+<td align="left">列出目录文件</td>
+</tr>
+<tr>
+<td align="left">make_token</td>
+<td align="left">创建进程访问令牌（access token），仅用于访问网络资源</td>
+</tr>
+<tr>
+<td align="left">mimikatz</td>
+<td align="left">运行mimikatz</td>
+</tr>
+<tr>
+<td align="left">mkdir</td>
+<td align="left">创建目录</td>
+</tr>
+<tr>
+<td align="left">mode</td>
+<td align="left">dns 使用DNS A记录作为数据通道（仅支持DNS上线Beacon）</td>
+</tr>
+<tr>
+<td align="left">mode</td>
+<td align="left">dns-txt 使用DNS TXT记录作为数据通道（仅支持DNS上线Beacon）</td>
+</tr>
+<tr>
+<td align="left">mode</td>
+<td align="left">dns6 使用DNS AAAA记录作为数据通道（仅支持DNS上线Beacon）</td>
+</tr>
+<tr>
+<td align="left">mv</td>
+<td align="left">移动文件</td>
+</tr>
+<tr>
+<td align="left">net</td>
+<td align="left">网络和主机探测工具（内置net命令）</td>
+</tr>
+<tr>
+<td align="left">note</td>
+<td align="left">给当前会话添加备注信息</td>
+</tr>
+<tr>
+<td align="left">portscan</td>
+<td align="left">网络端口扫描</td>
+</tr>
+<tr>
+<td align="left">powerpick</td>
+<td align="left">内存执行Powershell命令（不调用powershell.exe）</td>
+</tr>
+<tr>
+<td align="left">powershell</td>
+<td align="left">通过powershell.exe执行Powershell命令</td>
+</tr>
+<tr>
+<td align="left">powershell-import</td>
+<td align="left">导入本地powershell脚本到当前会话中</td>
+</tr>
+<tr>
+<td align="left">ppid</td>
+<td align="left">为所有新运行的进程设置伪造的父进程PID</td>
+</tr>
+<tr>
+<td align="left">printscreen</td>
+<td align="left">使用PrintScr方式截屏</td>
+</tr>
+<tr>
+<td align="left">ps</td>
+<td align="left">显示进程列表</td>
+</tr>
+<tr>
+<td align="left">psinject</td>
+<td align="left">注入到指定进程后在内存中执行Powershell命令（不调用powershell.exe)</td>
+</tr>
+<tr>
+<td align="left">pth</td>
+<td align="left">使用Mimikatz执行Pass-the-hash</td>
+</tr>
+<tr>
+<td align="left">pwd</td>
+<td align="left">显示当前目录</td>
+</tr>
+<tr>
+<td align="left">reg</td>
+<td align="left">查询注册表</td>
+</tr>
+<tr>
+<td align="left">remote-exec</td>
+<td align="left">在远程机器上执行命令（横向移动）</td>
+</tr>
+<tr>
+<td align="left">rev2self</td>
+<td align="left">恢复原始进程访问令牌（access token）</td>
+</tr>
+<tr>
+<td align="left">rm</td>
+<td align="left">删除文件或文件夹</td>
+</tr>
+<tr>
+<td align="left">rportfwd</td>
+<td align="left">反向端口转发（从Cobalt Strike Teamserver发起连接）</td>
+</tr>
+<tr>
+<td align="left">rportfwd_local</td>
+<td align="left">反向端口转发（从Cobalt Strike客户端发起连接）</td>
+</tr>
+<tr>
+<td align="left">run</td>
+<td align="left">在目标上执行程序（有回显）</td>
+</tr>
+<tr>
+<td align="left">runas</td>
+<td align="left">以另一个用户身份执行程序</td>
+</tr>
+<tr>
+<td align="left">runasadmin</td>
+<td align="left">以高权限执行程序</td>
+</tr>
+<tr>
+<td align="left">runu</td>
+<td align="left">以另一个进程PID作为父进程PID，并以其用户身份执行程序</td>
+</tr>
+<tr>
+<td align="left">screenshot</td>
+<td align="left">截屏</td>
+</tr>
+<tr>
+<td align="left">screenwatch</td>
+<td align="left">屏幕监控，每隔一段时间截屏</td>
+</tr>
+<tr>
+<td align="left">setenv</td>
+<td align="left">设置环境变量</td>
+</tr>
+<tr>
+<td align="left">shell</td>
+<td align="left">使用cmd.exe执行命令</td>
+</tr>
+<tr>
+<td align="left">shinject</td>
+<td align="left">注入shellcode到指定进程中</td>
+</tr>
+<tr>
+<td align="left">shspawn</td>
+<td align="left">创建傀儡进程并注入shellcode到其中运行</td>
+</tr>
+<tr>
+<td align="left">sleep</td>
+<td align="left">设置beacon回连间隔时间</td>
+</tr>
+<tr>
+<td align="left">socks</td>
+<td align="left">启动SOCKS4a代理服务器</td>
+</tr>
+<tr>
+<td align="left">socks</td>
+<td align="left">stop 停止SOCKS4a代理服务器</td>
+</tr>
+<tr>
+<td align="left">spawn</td>
+<td align="left">创建一个新Beacon会话</td>
+</tr>
+<tr>
+<td align="left">spawnas</td>
+<td align="left">以另一个用户身份创建一个新Beacon会话</td>
+</tr>
+<tr>
+<td align="left">spawnto</td>
+<td align="left">设置创建新进程时使用的可执行文件路径（傀儡进程的宿主exe文件路径）</td>
+</tr>
+<tr>
+<td align="left">spawnu</td>
+<td align="left">以另一个进程PID作为父进程PID，并以其用户身份创建一个新Beacon会话</td>
+</tr>
+<tr>
+<td align="left">spunnel</td>
+<td align="left">运行第三方agent shellcode并将其反向代理到控制端（从Cobalt Strike Teamserver发起连接）</td>
+</tr>
+<tr>
+<td align="left">spunnel_local</td>
+<td align="left">运行第三方agentshellcode并将其反向代理到控制端（从Cobalt Strike客户端发起连接）</td>
+</tr>
+<tr>
+<td align="left">ssh</td>
+<td align="left">通过SSH连接远程主机（使用账号密码认证）</td>
+</tr>
+<tr>
+<td align="left">ssh-key</td>
+<td align="left">通过SSH连接远程主机（使用证书私钥认证）</td>
+</tr>
+<tr>
+<td align="left">steal_token</td>
+<td align="left">从指定进程中窃取访问令牌（access token)</td>
+</tr>
+<tr>
+<td align="left">timestomp</td>
+<td align="left">复制B文件的创建、访问、修改时间戳到A文件（文件时间戳伪造）</td>
+</tr>
+<tr>
+<td align="left">unlink</td>
+<td align="left">断开与beacon的连接（用于通过TCP、命名管道连接的beacon）</td>
+</tr>
+<tr>
+<td align="left">upload</td>
+<td align="left">上传文件</td>
+</tr>
+</tbody></table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Shawn</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://52hertzi.com/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/">http://52hertzi.com/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://52hertzi.com" target="_blank">52hertzi</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Beacon/">Beacon</a><a class="post-meta__tags" href="/tags/CobaltStrike/">CobaltStrike</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://i.loli.net/2020/11/09/NkrICVse9BUfKMx.png" target="_blank"><img class="post-qr-code-img" src="https://i.loli.net/2020/11/09/NkrICVse9BUfKMx.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://i.loli.net/2020/11/09/kLFt7qs1woZvu4x.jpg" target="_blank"><img class="post-qr-code-img" src="https://i.loli.net/2020/11/09/kLFt7qs1woZvu4x.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/05/24/Wireshark%E8%87%AA%E6%88%91%E9%A3%9F%E7%94%A8/"><img class="prev-cover" src="https://s2.loli.net/2022/05/24/FoCK21vtImNRk3h.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Wireshark 基础抓包食用</div></div></a></div><div class="next-post pull-right"><a href="/2022/04/04/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7-%E6%AF%95%E8%AE%BE/"><img class="next-cover" src="https://s2.loli.net/2022/04/05/ezChma5DNjx8QXS.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">信息收集工具(毕设)</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://i.loli.net/2020/11/09/qgoaAWLQdRIs7uD.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Shawn</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">43</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/52hertzi"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">2020 实鼠不易 , 2021 牛转乾坤！淦</div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/05/24/Wireshark%E8%87%AA%E6%88%91%E9%A3%9F%E7%94%A8/" title="Wireshark 基础抓包食用"><img src="https://s2.loli.net/2022/05/24/FoCK21vtImNRk3h.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Wireshark 基础抓包食用"/></a><div class="content"><a class="title" href="/2022/05/24/Wireshark%E8%87%AA%E6%88%91%E9%A3%9F%E7%94%A8/" title="Wireshark 基础抓包食用">Wireshark 基础抓包食用</a><time datetime="2022-05-23T20:18:02.618Z" title="更新于 2022-05-24 04:18:02">2022-05-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2020/12/23/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AD%A6%E6%A0%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E9%92%93%E9%B1%BC/" title="记一次实验室钓鱼"><img src="https://i.loli.net/2020/11/09/A9IgHFYfoUxyTP7.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="记一次实验室钓鱼"/></a><div class="content"><a class="title" href="/2020/12/23/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AD%A6%E6%A0%A1%E5%AE%9E%E9%AA%8C%E5%AE%A4%E9%92%93%E9%B1%BC/" title="记一次实验室钓鱼">记一次实验室钓鱼</a><time datetime="2022-05-10T18:02:34.477Z" title="更新于 2022-05-11 02:02:34">2022-05-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/" title="Cobaltstrike指令/Beacon命令"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Cobaltstrike指令/Beacon命令"/></a><div class="content"><a class="title" href="/2022/05/06/Cobaltstrike%E6%8C%87%E4%BB%A4-Beacon%E5%91%BD%E4%BB%A4/" title="Cobaltstrike指令/Beacon命令">Cobaltstrike指令/Beacon命令</a><time datetime="2022-05-10T18:02:34.476Z" title="更新于 2022-05-11 02:02:34">2022-05-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/04/04/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7-%E6%AF%95%E8%AE%BE/" title="信息收集工具(毕设)"><img src="https://s2.loli.net/2022/04/05/ezChma5DNjx8QXS.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="信息收集工具(毕设)"/></a><div class="content"><a class="title" href="/2022/04/04/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7-%E6%AF%95%E8%AE%BE/" title="信息收集工具(毕设)">信息收集工具(毕设)</a><time datetime="2022-04-04T20:46:17.823Z" title="更新于 2022-04-05 04:46:17">2022-04-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/08/%E6%B5%85%E5%B0%9DWindow-Defender%E9%98%B2%E5%BE%A1%E6%9C%BA%E5%88%B6/" title="浅尝Window Defender防御机制"><img src="https://s2.loli.net/2022/03/08/bC9irBE1Y8nScRz.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浅尝Window Defender防御机制"/></a><div class="content"><a class="title" href="/2022/03/08/%E6%B5%85%E5%B0%9DWindow-Defender%E9%98%B2%E5%BE%A1%E6%9C%BA%E5%88%B6/" title="浅尝Window Defender防御机制">浅尝Window Defender防御机制</a><time datetime="2022-03-08T15:48:32.231Z" title="更新于 2022-03-08 23:48:32">2022-03-08</time></div></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg)"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Shawn</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">相见即是缘分，少年！有空常来啊...</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><div class="js-pjax"><script>if (document.getElementsByClassName('mermaid').length) {
+  if (window.mermaidJsLoad) mermaid.init()
+  else {
+    $.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js', function () {
+      window.mermaidJsLoad = true
+      mermaid.initialize({
+        theme: 'default',
+      })
+      false && mermaid.init()
+    })
+  }
+}</script><script>function loadValine () {
+  function initValine () {
+    let initData = {
+      el: '#vcomment',
+      appId: 'gQCglyv92NlaWrGjAf1ANbbf-MdYXbMMI',
+      appKey: 'VxmLj0u0vjDuqJ5cHMH1w5CT',
+      placeholder: '少年！都到这儿了不留下点什么吗！！',
+      avatar: 'monsterid',
+      meta: 'nick,mail,link'.split(','),
+      pageSize: '10',
+      lang: 'zh-CN',
+      recordIP: false,
+      serverURLs: '',
+      emojiCDN: '',
+      emojiMaps: "",
+      enableQQ: false,
+      path: window.location.pathname,
+    }
+
+    if (true) { 
+      initData.requiredFields= ('nick,mail'.split(','))
+    }
+    
+    if (false) {
+      const otherData = false
+      initData = Object.assign({}, initData, otherData)
+    }
+    
+    const valine = new Valine(initData)
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else $.getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.querySelector('#vcomment'),loadValine)
+  else setTimeout(() => loadValine(), 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="https://myhkw.cn/player/js/player.js" id="myhk" key="161172509791" m="1"></script><script>(function(){
+  const bp = document.createElement('script');
+  const curProtocol = window.location.protocol.split(':')[0];
+  if (curProtocol === 'https'){
+  bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+  bp.dataset.pjax = ''
+  const s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(bp, s);
+})()</script></div></body></html>
